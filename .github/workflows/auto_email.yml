@@ -1,0 +1,26 @@
+# .github/workflows/auto_email.yml
+
+name: Auto Email Sender
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  send-email-job:
+    name: Send Email
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # env 부분이 완전히 삭제되었습니다.
+      - name: Run Python script to send email
+        run: python send_email.py
