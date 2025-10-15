@@ -34,8 +34,8 @@ jobs:
       # 파이썬 스크립트 실행
       - name: Run Python script to scrape and email
         env:
-          MY_EMAIL: ${{ secrets.MY_EMAIL }}
-          MY_PASSWORD: ${{ secrets.MY_PASSWORD }}
+          MY_EMAIL: ${{ GMAIL_USERNAME }}
+          MY_PASSWORD: ${{ GMAIL_PASSWORD }}
         run: python wanted_scraper.py
       
       # 스크립트 실행 후 변경된 last_id.txt 파일을 자동으로 커밋하고 푸시
