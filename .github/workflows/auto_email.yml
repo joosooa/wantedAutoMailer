@@ -1,31 +1,47 @@
 # .github/workflows/auto_email.yml
 
-name: Auto Email Sender
+name: Wanted Job Scraper
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch: # 수동 실행을 위해 이 부분을 추가!
+  workflow_dispatch: # 1. 수동 실행을 위한 설정
+  schedule:
+    - cron: '0 0 * * *' # 2. 매일 UTC 0시 (한국 시간 오전 9시)에 자동 실행
 
 jobs:
-  send-email-job:
-    name: Send Email
+  scrape-and-email:
+    name: Scrape and Send Email
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    # 4. 스크립트가 last_id.txt 파일을 수정하고 저장(push)할 수 있도록 권한 부여
+    permissions:
+      contents: write
 
+    steps:
+      # 저장소의 모든 파일(파이썬, json 등)을 가져옴
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 파이썬 3.9 버전 설치
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      
-      # 파이썬 스크립트를 실행할 때, GitHub Secrets에 저장된 값을 환경변수로 넘겨줍니다.
-      - name: Run Python script to send email
+
+      # requirements.txt 파일에 명시된 라이브러리(requests) 설치
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # 파이썬 스크립트 실행
+      - name: Run Python script to scrape and email
         env:
-          GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
-          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
-          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-        run: python send_email.py
+          MY_EMAIL: ${{ secrets.MY_EMAIL }}
+          MY_PASSWORD: ${{ secrets.MY_PASSWORD }}
+        run: python wanted_scraper.py
+      
+      # 스크립트 실행 후 변경된 last_id.txt 파일을 자동으로 커밋하고 푸시
+      # 이걸 해줘야 다음 실행 때 새로운 공고만 가져옴
+      - name: Commit and push if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: Update last job ID"
+          file_pattern: last_id.txt
