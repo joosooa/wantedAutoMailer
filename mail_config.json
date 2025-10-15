@@ -1,0 +1,11 @@
+{
+  "smtp_server": "smtp.gmail.com",
+  "smtp_port": 587,
+  "smtp_user": "a01020097857@gmail.com",
+  "smtp_password": "jggo waag xxtb izbr",
+  "subject": "[자동화] GitHub Actions에서 보내는 알림",
+  "mail_title": "오늘의 데이터 리포트",
+  "recipients": [
+    "jukw3135@naver.com"
+  ]
+}
